@@ -1,9 +1,3 @@
-// import mongoose from 'mongoose';
-
-// const S = mongoose.Schema;
-
-// export default mongoose.model('Rate', new S({ crop: String, min: Number, max: Number, date: String }, { timestamps: true }));
-
 import mongoose from "mongoose";
 
 export default mongoose.model(

@@ -20,7 +20,7 @@ export default function useMaintenance() {
 
   useEffect(() => {
     load();
-    const s = io();
+    const s = io(import.meta.env.VITE_SOCKET_URL);
     s.on("maintenance:update", (d) => {
       fails.current = 0;
       setM({ ...d, down: false, ready: true });

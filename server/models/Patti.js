@@ -1,37 +1,3 @@
-// // import mongoose from 'mongoose';
-
-// // const S = mongoose.Schema;
-
-// // export default mongoose.model('Patti', new S({ crop: { type: S.Types.ObjectId, ref: 'Crop' }, farmer: { type: S.Types.ObjectId, ref: 'User' },
-// //   trader: { type: S.Types.ObjectId, ref: 'User' }, cropName: String, man: Number, rate: Number, gross: Number,
-// //   commission: Number, farmerNet: Number }, { timestamps: true }));
-
-// import mongoose from "mongoose";
-
-// const S = mongoose.Schema;
-
-// export default mongoose.model(
-//   "Patti",
-//   new S(
-//     {
-//       crop: { type: S.Types.ObjectId, ref: "Crop" },
-//       farmer: { type: S.Types.ObjectId, ref: "User" },
-//       trader: { type: S.Types.ObjectId, ref: "User" },
-//       cropName: String,
-//       man: Number,
-//       rate: Number,
-//       gross: Number,
-//       commission: Number,
-//       farmerNet: Number,
-//       paid: { type: Boolean, default: false },
-//       paidAt: Date,
-//       paymentId: String,
-//       orderId: String,
-//     },
-//     { timestamps: true },
-//   ),
-// );
-
 import mongoose from "mongoose";
 
 const S = mongoose.Schema;

@@ -8,7 +8,7 @@ export default function BidPanel({ cropId, role }) {
   useEffect(() => {
     const url = role === 'admin' ? `/admin/bids/${cropId}` : `/crops/${cropId}/bids`;
     const load = () => api(url).then(setD).catch(() => {});
-    load(); const s = io(); s.on('auction:update', load); return () => s.close();
+    load(); const s = io(import.meta.env.VITE_SOCKET_URL); s.on('auction:update', load); return () => s.close();
   }, [cropId]);
   if (!d) return null;
   const top = d.bids.reduce((a, b) => (!a || b.amount > a.amount ? b : a), null);

@@ -1,26 +1,3 @@
-// import { Setting } from "../models/index.js";
-
-// const DEFAULT = { on: false, message: "", until: null };
-// let cache = null; // એક સર્વર પ્રોસેસ માટે (દરેક રિક્વેસ્ટ પર DB ન વાંચવા)
-
-// export async function getMaintenance() {
-//   if (!cache) {
-//     const s = await Setting.findOne({ key: "maintenance" });
-//     cache = { ...DEFAULT, ...(s?.value || {}) };
-//   }
-//   return cache;
-// }
-
-// export async function setMaintenance(value) {
-//   cache = { ...DEFAULT, ...value };
-//   await Setting.findOneAndUpdate(
-//     { key: "maintenance" },
-//     { value: cache },
-//     { upsert: true },
-//   );
-//   return cache;
-// }
-
 import { Setting } from "../models/index.js";
 
 const DEFAULT = { on: false, message: "", until: null };
