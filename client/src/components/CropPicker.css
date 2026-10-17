@@ -1,0 +1,53 @@
+.crop-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: end;
+  margin: 8px 0;
+}
+.crop-picker > label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 180px;
+  font-weight: 600;
+}
+.crop-picker select {
+  min-height: 44px;
+  max-width: 100%;
+  width: 100%;
+  font: inherit;
+}
+.crop-picker select:focus-visible {
+  outline: 3px solid #edb343;
+  outline-offset: 2px;
+}
+@media (max-width: 600px) {
+  .crop-picker > label {
+    min-width: 0;
+    flex: 1 1 100%;
+  }
+}
+.assistant-crop-tools {
+  padding: 8px 12px;
+  border-top: 1px solid #d7e5db;
+  max-height: 170px;
+  overflow: auto;
+}
+.assistant-crop-tools .crop-picker > label {
+  min-width: 0;
+  flex: 1 1 140px;
+  font-size: 13px;
+}
+.assistant-crop-tools select {
+  font-size: 13px;
+}
+.assistant-crop-tools button {
+  border: 0;
+  border-radius: 8px;
+  background: #1b5e20;
+  color: #fff;
+  padding: 8px 12px;
+  min-height: 40px;
+  cursor: pointer;
+}
