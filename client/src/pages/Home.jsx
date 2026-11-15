@@ -1,10 +1,10 @@
-
 import { displayCropName } from '../constants.js';
 import { Link } from 'react-router-dom';
 import { api, getAuth } from '../api.js';
 import useLoad from '../hooks/useLoad.js';
 import NewsPreview from '../components/NewsPreview.jsx';
 import TrendChart from '../components/TrendChart.jsx';
+import { speechLang, spoken } from '../i18n/speech.js';
 
 export default function Home() {
   const [rates] = useLoad(() => api('/rates'));
@@ -36,10 +36,10 @@ export default function Home() {
       .join('. ');
 
     const utterance = new SpeechSynthesisUtterance(
-      'નોંધાયેલા બજાર ભાવ. ' + text
+      spoken('નોંધાયેલા બજાર ભાવ. ' + text)
     );
 
-    utterance.lang = 'gu-IN';
+    utterance.lang = speechLang();
     utterance.rate = 0.9;
 
     window.speechSynthesis.cancel();

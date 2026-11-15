@@ -1,0 +1,114 @@
+.lg-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: linear-gradient(135deg, #d6cbf6 0%, #ece3ee 42%, #f8e4a4 100%);
+  font-family: "Noto Sans Gujarati", system-ui, sans-serif;
+  color: #17151f;
+}
+.lg-card {
+  width: 100%;
+  max-width: 440px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 22px;
+  padding: 30px 22px;
+  box-shadow: 0 12px 40px rgba(60, 40, 120, 0.18);
+  animation: lgUp 0.45s both;
+}
+.lg-logo {
+  font-size: 44px;
+  line-height: 1;
+}
+.lg-card h1 {
+  margin: 8px 0 14px;
+  font-size: 26px;
+  color: #2b2740;
+}
+.lg-q {
+  margin: 4px 0;
+  font-size: 17px;
+  font-weight: 600;
+}
+.lg-q.en {
+  font-size: 15px;
+  font-weight: 500;
+  color: #6c6a7a;
+}
+.lg-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 22px 0 14px;
+}
+.lg-btn {
+  cursor: pointer;
+  border: 2px solid #e6e1f0;
+  background: #fff;
+  border-radius: 16px;
+  padding: 18px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font: inherit;
+  color: #17151f;
+  transition:
+    transform 0.15s,
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+.lg-btn:hover,
+.lg-btn:focus-visible {
+  transform: translateY(-2px);
+  border-color: #b02a62;
+  box-shadow: 0 8px 20px rgba(176, 42, 98, 0.18);
+  outline: none;
+}
+.lg-big {
+  font-size: 22px;
+  font-weight: 700;
+}
+.lg-btn small {
+  color: #6c6a7a;
+}
+.lg-hint {
+  font-size: 12.5px;
+  color: #6c6a7a;
+  margin: 6px 0 0;
+}
+@keyframes lgUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.lang-switch {
+  display: inline-flex;
+  border: 1px solid rgba(120, 110, 160, 0.45);
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.7);
+}
+.lang-switch button {
+  border: 0;
+  background: transparent;
+  padding: 6px 12px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #2b2740;
+}
+.lang-switch button.on {
+  background: #2b2740;
+  color: #fff;
+}

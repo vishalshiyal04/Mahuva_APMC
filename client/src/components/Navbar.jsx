@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { getAuth } from '../api.js';
+import LangSwitch from './LangSwitch.jsx';
 
 const linkClass = ({ isActive }) => 'btn ghost' + (isActive ? ' on' : '');
 
@@ -39,6 +40,7 @@ export default function Navbar() {
       </button>
 
       <div className={'actions' + (open ? ' open' : '')} onClick={() => setOpen(false)}>
+        <LangSwitch />
         <NavLink end to="/" className={linkClass}>📈 ભાવ</NavLink>
         {me && <NavLink to={'/' + me.role} className={linkClass}>🗂 ડેશબોર્ડ</NavLink>}
         {me ? (
