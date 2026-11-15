@@ -1,4 +1,4 @@
-
+import { displayCropName } from '../constants.js';
 import { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { api } from '../api.js';
