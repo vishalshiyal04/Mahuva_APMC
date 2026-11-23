@@ -1,8 +1,8 @@
-
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { api, getAuth } from '../api.js';
 import CropPicker from './CropPicker.jsx';
+import { speechLang, spoken } from '../i18n/speech.js';
 
 const WELCOME = {
   text:
@@ -275,7 +275,7 @@ export default function FarmerAssistant() {
     const instance = new Speech();
 
     recognition.current = instance;
-    instance.lang = 'gu-IN';
+    instance.lang = speechLang();
     instance.interimResults = false;
     instance.maxAlternatives = 1;
 
@@ -314,9 +314,9 @@ export default function FarmerAssistant() {
   function speak(text) {
     window.speechSynthesis.cancel();
 
-    const utterance = new SpeechSynthesisUtterance(text);
+    const utterance = new SpeechSynthesisUtterance(spoken(text));
 
-    utterance.lang = 'gu-IN';
+    utterance.lang = speechLang();
     utterance.rate = 0.9;
 
     window.speechSynthesis.speak(utterance);

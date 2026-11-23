@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { getAuth } from '../api.js';
+import LangSwitch from './LangSwitch.jsx';
+import NotificationBell from './NotificationBell.jsx';
 
 const linkClass = ({ isActive }) => 'btn ghost' + (isActive ? ' on' : '');
 
@@ -34,13 +36,17 @@ export default function Navbar() {
         </span>
       </Link>
 
+      {me && <NotificationBell key={me.id} />}
+
       <button className="burger" aria-label="મેનુ" aria-expanded={open} onClick={() => setOpen(o => !o)}>
         <span /><span /><span />
       </button>
 
       <div className={'actions' + (open ? ' open' : '')} onClick={() => setOpen(false)}>
+        <LangSwitch />
         <NavLink end to="/" className={linkClass}>📈 ભાવ</NavLink>
         {me && <NavLink to={'/' + me.role} className={linkClass}>🗂 ડેશબોર્ડ</NavLink>}
+        {me && me.role !== 'admin' && <NavLink to="/alerts" className={linkClass}>💹 ભાવ એલર્ટ</NavLink>}
         {me ? (
           <>
             <NavLink to="/profile" className={linkClass}>👤 {me.name}</NavLink>

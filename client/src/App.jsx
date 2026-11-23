@@ -1,4 +1,3 @@
-
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { getAuth } from './api.js';
 import { PAGES } from './constants.js';
@@ -9,6 +8,7 @@ import Footer from './components/Footer.jsx';
 import Guard from './components/Guard.jsx';
 import Home from './pages/Home.jsx';
 import Auth from './pages/Auth.jsx';
+import ForgotPassword from './pages/ForgotPassword.jsx';
 import Farmer from './pages/Farmer.jsx';
 import Trader from './pages/Trader.jsx';
 import Admin from './pages/Admin.jsx';
@@ -20,6 +20,7 @@ import Gallery from './pages/Gallery.jsx';
 import Videos from './pages/Videos.jsx';
 import Info from './pages/Info.jsx';
 import Profile from './pages/Profile.jsx';
+import Alerts from './pages/Alerts.jsx';
 import Maintenance from './pages/Maintenance.jsx';
 import FarmerAssistant from './components/FarmerAssistant.jsx';
 import './assistant.css';
@@ -56,8 +57,10 @@ if (m.ready && isAdmin && pathname === '/maintenance-preview') return <Maintenan
           <Route path="/videos" element={<Videos />} />
           {PAGES.map(p => <Route key={p.slug} path={'/' + p.slug} element={<Info key={p.slug} slug={p.slug} />} />)}
           <Route path="/profile" element={<Guard><Profile /></Guard>} />
+          <Route path="/alerts" element={<Guard><Alerts /></Guard>} />
           <Route path="/login" element={<Auth mode="login" />} />
           <Route path="/register" element={<Auth mode="register" />} />
+          <Route path="/forgot" element={<ForgotPassword />} />
           <Route path="/farmer" element={<Guard role="farmer"><Farmer /></Guard>} />
           <Route path="/trader" element={<Guard role="trader"><Trader /></Guard>} />
           <Route path="/agent" element={<Guard role="agent"><AgentDash /></Guard>} />

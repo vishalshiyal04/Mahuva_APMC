@@ -1,4 +1,3 @@
-import { displayCropName } from '../constants.js';
 import { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { api } from '../api.js';
@@ -6,6 +5,7 @@ import useLoad from '../hooks/useLoad.js';
 import Msg from '../components/Msg.jsx';
 import Pattis from '../components/Pattis.jsx';
 import PayButton from '../components/PayButton.jsx';
+import { displayCropName } from '../constants.js';
 
 export default function Trader() {
   const [me, loadMe] = useLoad(() => api('/me'));

@@ -16,6 +16,9 @@ import maintenance from "./middleware/maintenance.js";
 import maintenanceRoutes from "./routes/maintenance.routes.js";
 import settlementsRoutes from "./routes/settlements.routes.js";
 import assistantRoutes from "./routes/assistant.routes.js";
+import notificationsRoutes from "./routes/notifications.routes.js";
+import alertsRoutes from "./routes/alerts.routes.js";
+import pattiPdfRoutes from "./routes/pattiPdf.routes.js";
 
 const app = express();
 app.use(cors());
@@ -38,5 +41,8 @@ app.use("/api", maintenanceRoutes);
 app.use("/api", trendsRoutes);
 app.use("/api", settlementsRoutes);
 app.use("/api", assistantRoutes);
+app.use("/api", notificationsRoutes);
+app.use("/api", alertsRoutes);
+app.use("/api", pattiPdfRoutes);
 
 export default app;

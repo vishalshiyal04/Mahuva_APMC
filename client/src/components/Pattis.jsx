@@ -1,4 +1,3 @@
-
 import { displayCropName } from '../constants.js';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -7,6 +6,8 @@ import { loadRzp } from '../utils/razorpay.js';
 import usePagination from '../hooks/usePagination.js';
 import Pagination from './Pagination.jsx';
 import Msg from './Msg.jsx';
+import { downloadPatti, sharePatti } from '../utils/pattiShare.js';
+import { spoken } from '../i18n/speech.js';
 
 const rs = n => '₹' + Number(n || 0).toLocaleString('en-IN');
 const pid = p => 'PT-' + String(p._id).slice(-6).toUpperCase();
@@ -67,6 +68,7 @@ function Bill({ p, trader }) {
 export default function Pattis({ list, trader, onChange }) {
   const [sheet, setSheet] = useState(null);   // પ્રિન્ટ કરવાની પટ્ટીઓ
   const [paying, setPaying] = useState(null);
+  const [fileBusy, setFileBusy] = useState('');   // કઈ પટ્ટીનો PDF/WhatsApp ચાલુ છે
   const [msg, setMsg] = useState('');
   
   // પેજિનેશન હૂક (પ્રતિ પેજ 5 પટ્ટી)
@@ -117,6 +119,24 @@ export default function Pattis({ list, trader, onChange }) {
     }
   };
 
+  // PDF ડાઉનલોડ
+  const pdf = async p => {
+    setMsg(''); setFileBusy('pdf' + p._id);
+    try { await downloadPatti(p); } catch (x) { setMsg('⚠ ' + x.message); }
+    setFileBusy('');
+  };
+
+  // WhatsApp પર શેર: ફોનમાં PDF સીધો જોડાય, કમ્પ્યુટરમાં ડાઉનલોડ + WhatsApp ખુલે
+  const wa = async p => {
+    setMsg(''); setFileBusy('wa' + p._id);
+    const text = spoken(`મહુવા APMC પટ્ટી ${pid(p)}\n${displayCropName(p.cropName)} ${p.man} મણ × ${rs(p.rate)} = ${rs(p.gross)}\n${trader ? 'ચૂકવવાપાત્ર' : 'ખેડૂતને મળશે'}: ${rs(trader ? p.gross : p.farmerNet)}`);
+    try {
+      const r = await sharePatti(p, text);
+      if (r === 'fallback') setMsg('PDF ડાઉનલોડ થયો. WhatsApp ખુલ્યું છે, ચેટમાં 📎 થી PDF જોડો.');
+    } catch (x) { setMsg('⚠ ' + x.message); }
+    setFileBusy('');
+  };
+
   return (
     <>
       <div className="card">
@@ -136,7 +156,9 @@ export default function Pattis({ list, trader, onChange }) {
             કમિશન: {rs(p.commission)} | {trader ? 'ચૂકવવાપાત્ર' : 'ખેડૂતને મળશે'}: {rs(trader ? p.gross : p.farmerNet)}<br />
             વેપારીની ચૂકવણી: <span className={'pay-badge ' + (p.paid ? 'ok' : 'wait')}>{p.paid ? '✅ ચૂકવાઈ ગયું' : '⏳ બાકી'}</span><br />
             <small>{pid(p)} • {new Date(p.createdAt).toLocaleString()}</small>{' '}
-            <button onClick={() => setSheet([p])}>🖨 પ્રિન્ટ</button>
+            <button onClick={() => setSheet([p])}>🖨 પ્રિન્ટ</button>{' '}
+            <button className="alt" disabled={!!fileBusy} onClick={() => pdf(p)}>{fileBusy === 'pdf' + p._id ? 'થોભો...' : '📄 PDF'}</button>{' '}
+            <button className="alt" disabled={!!fileBusy} onClick={() => wa(p)}>{fileBusy === 'wa' + p._id ? 'થોભો...' : '💬 WhatsApp'}</button>
             {trader && !p.paid && (
               <button className="alt" disabled={paying === p._id} onClick={() => pay(p)}>
                 {paying === p._id ? 'થોભો...' : `💳 હમણાં ચૂકવો ${rs(p.gross)}`}

@@ -1,3 +1,4 @@
+import { checkAlerts } from "../services/alerts.js";
 import { Router } from "express";
 
 import { Rate, Crop, Page, Patti } from "../models/index.js";
@@ -171,7 +172,8 @@ router.post(
   "/admin/assistant/rates",
   auth("admin"),
   wrap(async (req, res) => {
-    await Rate.create(validateRate(req.body));
+    const rate = await Rate.create(validateRate(req.body));
+    checkAlerts(rate);
 
     res.json({ msg: "એકમ સાથે ભાવ પ્રકાશિત થયા." });
   }),

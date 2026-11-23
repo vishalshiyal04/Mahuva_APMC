@@ -1,3 +1,5 @@
+import { notify } from "../services/notify.js";
+import { displayCropName } from "../../shared/crops.mjs";
 import { Router } from "express";
 import { Patti, User } from "../models/index.js";
 import auth from "../middleware/auth.js";
@@ -191,6 +193,32 @@ router.post(
       return res.status(409).json({
         error: "રકમ બાકી રકમ કરતાં વધુ છે. તાજી વિગતો તપાસો.",
       });
+    }
+
+    if (payment.kind === "payment") {
+      Patti.findById(req.params.id)
+        .select("farmer trader cropName")
+        .lean()
+        .then((pt) => {
+          if (!pt) return;
+          const amt = "₹" + (payment.amountPaise / 100).toLocaleString("en-IN");
+          const ref = `${displayCropName(pt.cropName)} • PT-${String(pt._id).slice(-6).toUpperCase()}`;
+          if (payment.side === "farmer")
+            notify(pt.farmer, {
+              type: "payment",
+              title: `💰 તમને ચુકવણી મળી: ${amt}`,
+              body: ref,
+              link: "/farmer",
+            });
+          else
+            notify(pt.trader, {
+              type: "payment",
+              title: `💰 તમારી ચુકવણી નોંધાઈ: ${amt}`,
+              body: ref,
+              link: "/trader",
+            });
+        })
+        .catch(() => {});
     }
 
     res.status(201).json({

@@ -1,3 +1,4 @@
+import { checkAlerts } from "../services/alerts.js";
 import { validateCropName } from "../../shared/crops.mjs";
 import { indiaDay, validateRate } from "../services/assistant.js";
 import { Router } from "express";
@@ -23,6 +24,7 @@ router.put(
     );
     Object.assign(r, updated);
     await r.save();
+    checkAlerts(r);
     res.json({ msg: "ભાવ સુધાર્યો" });
   }),
 );
