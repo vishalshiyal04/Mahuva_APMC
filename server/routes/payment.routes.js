@@ -1,3 +1,5 @@
+import { notify } from "../services/notify.js";
+import { displayCropName } from "../../shared/crops.mjs";
 import { Router } from "express";
 import crypto from "crypto";
 import Razorpay from "razorpay";
@@ -63,6 +65,12 @@ router.post(
     req.user.subscriptionUntil = new Date(base.getTime() + 30 * 864e5);
     req.user.subRequest = "approved";
     await req.user.save();
+    notify(req.user._id, {
+      type: "subscription",
+      title: "✅ પેમેન્ટ સફળ, સબ્સ્ક્રિપ્શન ચાલુ",
+      body: `તમારો માસિક પ્લાન ${req.user.subscriptionUntil.toLocaleDateString("en-GB", { timeZone: "Asia/Kolkata" })} સુધી ચાલુ છે.`,
+      link: "/trader",
+    });
     res.json({ msg: "પેમેન્ટ સફળ, સબ્સ્ક્રિપ્શન ચાલુ" });
   }),
 );
@@ -115,6 +123,12 @@ router.post(
     p.paymentId = pay;
     await p.save();
     io.emit("auction:update", { patti: p._id }); // ખેડૂતનું પેજ પણ અપડેટ થાય
+    notify(p.farmer, {
+      type: "payment",
+      title: "💰 વેપારીએ પટ્ટીનું પેમેન્ટ કર્યું",
+      body: `PT-${String(p._id).slice(-6).toUpperCase()} • ${displayCropName(p.cropName)} ${p.man} મણ • ₹${Math.round(p.gross).toLocaleString("en-IN")}`,
+      link: "/farmer",
+    });
     res.json({ msg: "પેમેન્ટ સફળ, પટ્ટી ચૂકવાઈ ગઈ" });
   }),
 );

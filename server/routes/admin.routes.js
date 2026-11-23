@@ -1,3 +1,6 @@
+import { notify } from "../services/notify.js";
+import { checkAlerts } from "../services/alerts.js";
+import { displayCropName } from "../../shared/crops.mjs";
 import { indiaDay, validateRate } from "../services/assistant.js";
 import { Router } from "express";
 import { User, Crop, Rate, Patti, Ad, Bid } from "../models/index.js";
@@ -47,13 +50,19 @@ router.post(
   "/admin/crops/:id/verify",
   auth("admin"),
   wrap(async (req, res) => {
-    res.json(
-      await Crop.findByIdAndUpdate(
-        req.params.id,
-        { status: "verified", shed: req.body.shed },
-        { new: true },
-      ),
+    const c = await Crop.findByIdAndUpdate(
+      req.params.id,
+      { status: "verified", shed: req.body.shed },
+      { new: true },
     );
+    if (c)
+      notify(c.farmer, {
+        type: "gate",
+        title: "✅ તમારો માલ વેરીફાય થયો",
+        body: `${displayCropName(c.name)} ${c.man} મણ${c.shed ? ` • શેડ ${c.shed}` : ""}. યાર્ડના ગેટ પર QR સ્કેન કરાવો.`,
+        link: "/farmer",
+      });
+    res.json(c);
   }),
 );
 
@@ -70,6 +79,12 @@ router.post(
     c.status = "entered";
     c.enteredAt = new Date();
     await c.save();
+    notify(c.farmer?._id, {
+      type: "gate",
+      title: "🚪 ગેટ પ્રવેશ મંજૂર",
+      body: `${displayCropName(c.name)} ${c.man} મણ યાર્ડમાં દાખલ થયો${c.shed ? ` • શેડ ${c.shed}` : ""}.`,
+      link: "/farmer",
+    });
     res.json({
       msg: `પ્રવેશ મંજૂર: ${c.farmer.name} - ${c.name} ${c.man} મણ → શેડ ${c.shed || "-"}`,
     });
@@ -89,6 +104,33 @@ router.post(
     c.highestBidder = null;
     await c.save();
     io.emit("auction:update", c);
+    const crop = `${displayCropName(c.name)} ${c.man} મણ`;
+    notify(c.farmer, {
+      type: "auction",
+      title: "🔨 તમારા માલની હરાજી શરૂ થઈ",
+      body: `${crop} • શરૂઆતનો ભાવ ₹${c.basePrice}/મણ`,
+      link: "/farmer",
+    });
+    // સક્રિય સબ્સ્ક્રિપ્શન વાળા બધા વેપારીને
+    User.find({
+      role: "trader",
+      blocked: { $ne: true },
+      subscriptionUntil: { $gt: new Date() },
+    })
+      .select("_id")
+      .lean()
+      .then((ts) =>
+        notify(
+          ts.map((t) => t._id),
+          {
+            type: "auction",
+            title: "🔨 નવી હરાજી ચાલુ",
+            body: `${crop} • શરૂઆતનો ભાવ ₹${c.basePrice}/મણ. બોલી લગાવો.`,
+            link: "/trader",
+          },
+        ),
+      )
+      .catch(() => {});
     res.json({ msg: "હરાજી શરૂ" });
   }),
 );
@@ -102,7 +144,7 @@ router.post(
     if (!c.highestBidder) throw new Error("કોઈ બોલી લાગી નથી");
     const gross = c.highestBid * c.man,
       commission = Settings.commissionPerMan * c.man;
-    await Patti.create({
+    const patti = await Patti.create({
       crop: c._id,
       farmer: c.farmer,
       trader: c.highestBidder,
@@ -116,6 +158,20 @@ router.post(
     c.status = "sold";
     await c.save();
     io.emit("auction:update", c);
+    const pt = `PT-${String(patti._id).slice(-6).toUpperCase()}`;
+    const what = `${displayCropName(c.name)} ${c.man} મણ × ₹${c.highestBid}`;
+    notify(c.farmer, {
+      type: "patti",
+      title: "🧾 સોદો પાકો, પટ્ટી બની ગઈ",
+      body: `${pt} • ${what} • તમને મળશે ₹${Math.round(patti.farmerNet).toLocaleString("en-IN")}`,
+      link: "/farmer",
+    });
+    notify(c.highestBidder, {
+      type: "patti",
+      title: "🧾 તમારી બોલી જીતી, પટ્ટી બની ગઈ",
+      body: `${pt} • ${what} • ચૂકવવાપાત્ર ₹${Math.round(patti.gross).toLocaleString("en-IN")}`,
+      link: "/trader",
+    });
     res.json({ msg: "સોદો પાકો, પટ્ટી બની ગઈ" });
   }),
 );
@@ -124,9 +180,10 @@ router.post(
   "/admin/rates",
   auth("admin"),
   wrap(async (req, res) => {
-    await Rate.create(
+    const rate = await Rate.create(
       validateRate({ ...req.body, date: req.body.date || indiaDay() }),
     );
+    checkAlerts(rate); // ભાવ એલર્ટ તપાસો (પાછળ ચાલે, જવાબ રોકતું નથી)
     res.json({ msg: "ભાવ સેવ થયો" });
   }),
 );
@@ -147,6 +204,12 @@ router.post(
     u.subscriptionUntil = new Date(base.getTime() + 30 * 864e5);
     u.subRequest = "approved";
     await u.save();
+    notify(u._id, {
+      type: "subscription",
+      title: "✅ સબ્સ્ક્રિપ્શન મંજૂર",
+      body: `તમારો માસિક પ્લાન ${u.subscriptionUntil.toLocaleDateString("en-GB", { timeZone: "Asia/Kolkata" })} સુધી ચાલુ છે. હવે લાઈવ હરાજીમાં બોલી લગાવો.`,
+      link: "/trader",
+    });
     res.json({ msg: "સબ્સ્ક્રિપ્શન મંજૂર" });
   }),
 );

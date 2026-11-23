@@ -26,6 +26,7 @@ export function toEnglish(text) {
   const exact = dict.get(text.trim());
   if (exact !== undefined) return text.replace(text.trim(), exact);
   return text
+    .replace(/(\d[\d\/.\-]*\d)\s*સુધી ચાલુ છે/g, "is active until $1")
     .replace(/(\d[\d\/.\-]*\d)\s*સુધી/g, "until $1") // "15/12/2026 સુધી" -> "until 15/12/2026"
     .replace(RE, (m) => dict.get(m))
     .replace(/[૦-૯]/g, (d) => String(DIGITS.indexOf(d)));

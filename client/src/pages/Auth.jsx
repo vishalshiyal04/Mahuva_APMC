@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../api.js';
 import Msg from '../components/Msg.jsx';
+import { SECURITY_QUESTIONS } from '../../../shared/securityQuestions.mjs';
 
 const ROLES = [
   { id: 'farmer', icon: '🌾', title: 'ખેડૂત', text: 'માલ વેચો' },
@@ -22,6 +23,8 @@ export default function Auth({ mode }) {
     const { again, ...payload } = f;
     if (isReg && (f.password || '').length < 8) return setE('પાસવર્ડ ઓછામાં ઓછો 8 અક્ષરનો રાખો');
     if (isReg && f.password !== again) return setE('બંને પાસવર્ડ સરખા નથી');
+    if (isReg && !f.secQuestion) return setE('સુરક્ષા પ્રશ્ન પસંદ કરો');
+    if (isReg && (f.secAnswer || '').trim().length < 3) return setE('સુરક્ષા જવાબ ઓછામાં ઓછો 3 અક્ષરનો લખો');
     setBusy(true);
     try {
       const d = await api(isReg ? '/register' : '/login', 'POST', payload);
@@ -87,8 +90,24 @@ export default function Auth({ mode }) {
           </label>
         )}
 
+        {isReg && (
+          <>
+            <label className="field"><span>🔐 સુરક્ષા પ્રશ્ન (પાસવર્ડ ભુલાઈ જાય ત્યારે કામ લાગશે)</span>
+              <select value={f.secQuestion || ''} onChange={set('secQuestion')}>
+                <option value="">-- પ્રશ્ન પસંદ કરો --</option>
+                {SECURITY_QUESTIONS.map(q => <option key={q.id} value={q.id}>{q.text}</option>)}
+              </select>
+            </label>
+            <label className="field"><span>✍️ સુરક્ષા જવાબ (ફક્ત તમને ખબર હોય તેવો)</span>
+              <input placeholder="જવાબ લખો" value={f.secAnswer || ''} onChange={set('secAnswer')} autoComplete="off" />
+            </label>
+          </>
+        )}
+
         <Msg e={e} />
         <button className="submit" disabled={busy}>{busy ? 'થોભો...' : isReg ? 'રજીસ્ટર કરો →' : 'લોગિન કરો →'}</button>
+
+        {!isReg && <p className="switch"><Link to="/forgot">પાસવર્ડ ભૂલી ગયા?</Link></p>}
 
         <p className="switch">
           {isReg ? <>પહેલેથી ખાતું છે? <Link to="/login">લોગિન કરો</Link></> : <>નવા છો? <Link to="/register">રજીસ્ટર કરો</Link></>}

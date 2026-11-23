@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { api, getAuth } from '../api.js';
 import useLoad from '../hooks/useLoad.js';
 import Msg from '../components/Msg.jsx';
+import SecurityQuestionCard from '../components/SecurityQuestionCard.jsx';
 
 const ROLE = { farmer: '🌾 ખેડૂત', trader: '💼 વેપારી', admin: '👑 એડમિન', agent: '🏪 કમિશન એજન્ટ' };
 const sum = (list, key) => list.reduce((a, x) => a + (x[key] || 0), 0);
@@ -101,6 +102,8 @@ export default function Profile() {
         <button onClick={save}>સેવ કરો</button>
         <Msg e={msg} ok />
       </div>
+
+      {p.role !== 'admin' && <SecurityQuestionCard current={p.secQuestion} onSaved={loadP} />}
     </>
   );
 }

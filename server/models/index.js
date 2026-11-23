@@ -10,3 +10,5 @@ export { default as Page } from "./Page.js";
 export { default as News } from "./News.js";
 export { default as Media } from "./Media.js";
 export { default as Setting } from "./Setting.js";
+export { default as Notification } from "./Notification.js";
+export { default as PriceAlert } from "./PriceAlert.js";
