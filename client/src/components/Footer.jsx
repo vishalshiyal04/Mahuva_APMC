@@ -114,7 +114,7 @@ export default function Footer() {
         )}
 
         <div className="footer-bottom">
-          <span>© {new Date().getFullYear()} મહુવા કૃષિ ઉત્પન્ન બજાર સમિતિ. સર્વ હક્ક સુરક્ષિત.</span>
+          <span>© {new Date().getFullYear()} મહુવા કૃષિ ઉત્પન્ન બજાર સમિતિ. સર્વ હક્ક સુરક્ષિત. (Demo App / It's not real)</span>
           {/* <span>ખેડૂતોના હિત માટે ❤️ સાથે બનાવ્યું</span> */}
           <span>ખેડૂતોના હિત માટે ❤️ Developed By Vishal B Shiyal</span>
           <button className="top-link" onClick={toTop}>ઉપર જાઓ ↑</button>

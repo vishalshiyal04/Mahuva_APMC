@@ -22,6 +22,7 @@ export default mongoose.model(
       secAnswer: { type: String, select: false },
       resetFails: { type: Number, default: 0 },
       resetLockUntil: Date,
+      pwdChangedAt: Date, // પાસવર્ડ બદલાયા પછી જૂના લોગિન ટોકન બંધ થાય
     },
     { timestamps: true },
   ),

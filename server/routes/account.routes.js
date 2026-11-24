@@ -10,7 +10,14 @@ router.get(
   "/profile",
   auth(),
   wrap(async (req, res) => {
-    const { password, ...user } = req.user.toObject();
+    const {
+      password,
+      secAnswer,
+      resetFails,
+      resetLockUntil,
+      pwdChangedAt,
+      ...user
+    } = req.user.toObject();
     res.json(user);
   }),
 );

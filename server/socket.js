@@ -1,11 +1,14 @@
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
+import { allowedOrigins } from "./middleware/security.js";
 
 // રિયલ-ટાઇમ (લાઈવ બોલી + સૂચનાઓ) માટે Socket.io. initSocket પછી બધે `io` વાપરી શકાય.
 export let io;
 
 export function initSocket(httpServer) {
-  io = new Server(httpServer, { cors: { origin: "*" } });
+  io = new Server(httpServer, {
+    cors: { origin: allowedOrigins.length ? allowedOrigins : "*" },
+  });
 
   // લોગિન કરેલો યુઝર પોતાના ખાનગી room માં જોડાય → ફક્ત તેને જ તેની સૂચના મળે
   io.on("connection", (socket) => {

@@ -146,6 +146,7 @@ router.put(
       if (password.length < 6)
         throw new Error("પાસવર્ડ ઓછામાં ઓછો 6 અક્ષરનો રાખો");
       u.password = await bcrypt.hash(password, 10);
+      u.pwdChangedAt = new Date();
     }
     await u.save();
     res.json({ msg: "એજન્ટની વિગત સુધારી" });
