@@ -1,4 +1,3 @@
-
 export {
   CROPS,
   CROP_GROUPS,
@@ -23,7 +22,7 @@ export const PAGES = [
 export const CONTACT = {
   address: "કૃષિ ઉત્પન્ન બજાર સમિતિ, માર્કેટિંગ યાર્ડ, મહુવા, ગુજરાત",
   phone: "+91 00000 00000",
-  email: "info@example.com",
+  email: "mxxi23532@gmail.com",
   hours: "સોમ – શનિ: સવારે 8:00 થી સાંજે 6:00",
   whatsapp: "", // દા.ત. https://wa.me/919999999999
   facebook: "",

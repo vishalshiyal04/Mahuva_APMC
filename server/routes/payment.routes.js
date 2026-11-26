@@ -11,6 +11,13 @@ import { Payment, Patti } from "../models/index.js";
 import { io } from "../socket.js";
 const router = Router();
 
+// સહી સરખાવવામાં સમય-આધારિત અનુમાન ન થાય એટલે constant-time compare
+const safeEqual = (a, b) => {
+  const x = Buffer.from(String(a));
+  const y = Buffer.from(String(b));
+  return x.length === y.length && crypto.timingSafeEqual(x, y);
+};
+
 // ---- Razorpay ----
 const rzp = process.env.RAZORPAY_KEY_ID
   ? new Razorpay({
@@ -55,7 +62,7 @@ router.post(
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
       .update(o + "|" + p)
       .digest("hex");
-    if (sig !== sg) throw new Error("પેમેન્ટ ચકાસણી નિષ્ફળ");
+    if (!safeEqual(sig, sg)) throw new Error("પેમેન્ટ ચકાસણી નિષ્ફળ");
     await Payment.create({
       paymentId: p,
       user: req.user._id,
@@ -112,7 +119,7 @@ router.post(
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
       .update(o + "|" + pay)
       .digest("hex");
-    if (sig !== sg) throw new Error("પેમેન્ટ ચકાસણી નિષ્ફળ");
+    if (!safeEqual(sig, sg)) throw new Error("પેમેન્ટ ચકાસણી નિષ્ફળ");
     await Payment.create({
       paymentId: pay,
       user: req.user._id,

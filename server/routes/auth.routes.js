@@ -12,6 +12,14 @@ import {
 
 const router = Router();
 
+const PHONE = /^[6-9]\d{9}$/; // ભારતીય 10 અંકનો મોબાઈલ
+const str = (v, max) => (typeof v === "string" ? v.trim().slice(0, max) : "");
+function checkPassword(pw) {
+  if (typeof pw !== "string" || pw.length < 8)
+    throw new Error("પાસવર્ડ ઓછામાં ઓછો 8 અક્ષરનો રાખો");
+  if (pw.length > 128) throw new Error("પાસવર્ડ ખૂબ લાંબો છે");
+}
+
 const MAX_FAILS = 5; // આટલા ખોટા જવાબ પછી લોક
 const LOCK_MIN = 15; // મિનિટ
 const DUMMY_HASH = bcrypt.hashSync("dummy-answer", 10); // ખોટા ફોન પર પણ સમય સરખો રાખવા
@@ -27,30 +35,35 @@ async function buildSecurity(secQuestion, secAnswer) {
 router.post(
   "/register",
   wrap(async (req, res) => {
-    const {
-      name,
-      phone,
-      password,
-      role,
-      gst,
-      license,
-      secQuestion,
-      secAnswer,
-    } = req.body;
+    const { role, password, secQuestion, secAnswer } = req.body;
+    const name = str(req.body.name, 80);
+    const phone = str(req.body.phone, 15);
+    const gst = str(req.body.gst, 20);
+    const license = str(req.body.license, 40);
     if (!["farmer", "trader"].includes(role)) throw new Error("અમાન્ય રોલ");
     if (!name || !phone || !password) throw new Error("બધી વિગતો ભરો");
+    if (name.length < 2) throw new Error("નામ સાચું લખો");
+    if (!PHONE.test(phone)) throw new Error("સાચો 10 અંકનો મોબાઈલ નંબર લખો");
+    checkPassword(password);
     if (role === "trader" && (!gst || !license))
       throw new Error("GST અને લાયસન્સ જરૂરી છે");
     const sec = await buildSecurity(secQuestion, secAnswer);
-    const u = await User.create({
-      name,
-      phone,
-      role,
-      gst,
-      license,
-      password: await bcrypt.hash(password, 10),
-      ...sec,
-    });
+    let u;
+    try {
+      u = await User.create({
+        name,
+        phone,
+        role,
+        gst,
+        license,
+        password: await bcrypt.hash(password, 10),
+        ...sec,
+      });
+    } catch (e) {
+      if (e?.code === 11000)
+        throw new Error("આ મોબાઈલ નંબર પહેલેથી વપરાયેલો છે");
+      throw e;
+    }
     res.json(sign(u));
   }),
 );
@@ -58,12 +71,15 @@ router.post(
 router.post(
   "/login",
   wrap(async (req, res) => {
-    const { phone, password } = req.body;
-    const u = await User.findOne({ phone: String(phone || "") });
+    const phone = str(req.body.phone, 20);
+    const { password } = req.body;
+    const u = phone ? await User.findOne({ phone }) : null;
     if (
       !u ||
+      typeof password !== "string" ||
       !password ||
-      !(await bcrypt.compare(String(password), u.password))
+      password.length > 128 ||
+      !(await bcrypt.compare(password, u.password))
     )
       throw new Error("ફોન અથવા પાસવર્ડ ખોટો છે");
     if (u.blocked)
@@ -102,8 +118,7 @@ router.post(
     const phone = String(req.body.phone || "").trim();
     const { answer, password } = req.body;
     if (!phone || !answer || !password) throw new Error("બધી વિગતો ભરો");
-    if (String(password).length < 8)
-      throw new Error("પાસવર્ડ ઓછામાં ઓછો 8 અક્ષરનો રાખો");
+    checkPassword(password);
 
     const u = await User.findOne({ phone }).select("+secAnswer");
     const bad = new Error("સુરક્ષા જવાબ ખોટો છે");
@@ -129,6 +144,7 @@ router.post(
     }
 
     u.password = await bcrypt.hash(String(password), 10);
+    u.pwdChangedAt = new Date(); // જૂના લોગિન ટોકન બંધ
     u.resetFails = 0;
     u.resetLockUntil = undefined;
     await u.save();
