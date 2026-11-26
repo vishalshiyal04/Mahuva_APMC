@@ -1,0 +1,93 @@
+.cf-back {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(15, 12, 30, 0.55);
+  animation: cfFade 0.15s ease both;
+  font-family: "Noto Sans Gujarati", system-ui, sans-serif;
+}
+.cf-box {
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+  background: #fff;
+  color: #17151f;
+  border-radius: 20px;
+  padding: 24px 20px 20px;
+  box-shadow: 0 20px 60px rgba(20, 10, 60, 0.4);
+  animation: cfPop 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+.cf-icon {
+  font-size: 40px;
+  line-height: 1;
+}
+.cf-box h3 {
+  margin: 10px 0 6px;
+  font-size: 20px;
+}
+.cf-box p {
+  margin: 0 0 18px;
+  color: #4c4a5c;
+  font-size: 15px;
+  line-height: 1.55;
+}
+.cf-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.cf-btn {
+  border: 0;
+  border-radius: 12px;
+  padding: 12px 10px;
+  font: inherit;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition:
+    transform 0.1s,
+    filter 0.15s;
+}
+.cf-btn:hover {
+  filter: brightness(1.05);
+}
+.cf-btn:active {
+  transform: scale(0.97);
+}
+.cf-btn:focus-visible {
+  outline: 3px solid #b02a62;
+  outline-offset: 2px;
+}
+.cf-cancel {
+  background: #eceaf3;
+  color: #17151f;
+}
+.cf-danger {
+  background: #d6334d;
+  color: #fff;
+}
+.cf-ok {
+  background: #1e7a46;
+  color: #fff;
+}
+@keyframes cfFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes cfPop {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
